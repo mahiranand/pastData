@@ -14,6 +14,7 @@ def store_data_into_clickhouse(client, data):
         df = pd.DataFrame(value)
 
         if 'timestamp' in df.columns:
+            df['timestamp'] = df['timestamp'].replace('null', np.nan)
             df['timestamp'] = pd.to_datetime(df['timestamp'], format='mixed', utc=True)
         else:
             raise ValueError("DataFrame does not contain 'timestamp' column")
@@ -110,10 +111,12 @@ if __name__ == '__main__':
     # store_data_into_clickhouse(client, filteredData)
     feb_path = 'fe-page/2024-02-'
 
-    for i in range(14, 30):
+    for i in range(1, 30):
         i = "{:02d}".format(i)
 
+        print(i)
         for hour in range (0, 24):
+            print(hour)
             hour = "{:02d}".format(hour)
 
             directory_path = feb_path + i + '/' + hour
@@ -127,7 +130,9 @@ if __name__ == '__main__':
     for i in range(1, 15):
         i = "{:02d}".format(i)
 
+        print
         for hour in range (0, 24):
+            print(hour)
             hour = "{:02d}".format(hour)
 
             directory_path = mar_path + i + '/' + hour
