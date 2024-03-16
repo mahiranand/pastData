@@ -13,6 +13,7 @@ def store_data_into_clickhouse(client, data):
     for key, value in data.items():
         df = pd.DataFrame(value)
         if(df is None or df.empty):
+            print (f"DataFrame for {key} is empty")
             continue
 
         if 'timestamp' in df.columns:
@@ -117,7 +118,7 @@ if __name__ == '__main__':
     #         filtered_data = makeSchema(json_data)
     #         store_data_into_clickhouse(client, filtered_data)
     
-    mar_path = 'fe-page/2024-03-'
+    mar_path = 'reward-created/2024-03-'
     
     for i in range(1, 15):
         i = "{:02d}".format(i)
