@@ -12,6 +12,8 @@ import numpy as np
 def store_data_into_clickhouse(client, data):
     for key, value in data.items():
         df = pd.DataFrame(value)
+        if(df is None or df.empty):
+            continue
 
         if 'timestamp' in df.columns:
             df['timestamp'] = df['timestamp'].replace('null', np.nan)
@@ -101,19 +103,19 @@ if __name__ == '__main__':
     # store_data_into_clickhouse(client, filteredData)
     feb_path = 'reward-created/2024-02-'
 
-    for i in range(1, 30):
-        i = "{:02d}".format(i)
+    # for i in range(1, 30):
+    #     i = "{:02d}".format(i)
 
-        print(i)
-        for hour in range (0, 24):
-            print(hour)
-            hour = "{:02d}".format(hour)
+    #     print(i)
+    #     for hour in range (0, 24):
+    #         print(hour)
+    #         hour = "{:02d}".format(hour)
 
-            directory_path = feb_path + i + '/' + hour
+    #         directory_path = feb_path + i + '/' + hour
 
-            json_data = read_json_data_from_azure(blob_client, AZURE_CONTAINER, directory_path)
-            filtered_data = makeSchema(json_data)
-            store_data_into_clickhouse(client, filtered_data)
+    #         json_data = read_json_data_from_azure(blob_client, AZURE_CONTAINER, directory_path)
+    #         filtered_data = makeSchema(json_data)
+    #         store_data_into_clickhouse(client, filtered_data)
     
     mar_path = 'fe-page/2024-03-'
     
