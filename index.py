@@ -344,11 +344,11 @@ if __name__ == '__main__':
     # store_data_into_clickhouse(client, filteredData)
     feb_path = 'fe-track/2024-02-'
 
-    for i in range(12, 30):
+    for i in range(13, 30):
         i = "{:02d}".format(i)
 
         print(i)
-        for hour in range (12, 24):
+        for hour in range (1, 24):
             print(hour)
             hour = "{:02d}".format(hour)
 
