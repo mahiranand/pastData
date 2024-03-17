@@ -12,9 +12,9 @@ import numpy as np
 def store_data_into_clickhouse(client, data):
     for key, value in data.items():
         df = pd.DataFrame(value)
-        print(key)
+        # print(key)
         if df is None or df.empty:
-            print(f"DataFrame for {key} is empty")
+            # print(f"DataFrame for {key} is empty")
             continue
 
         if 'timestamp' in df.columns:
