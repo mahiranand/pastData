@@ -344,11 +344,11 @@ if __name__ == '__main__':
     # store_data_into_clickhouse(client, filteredData)
     feb_path = 'fe-track/2024-02-'
 
-    for i in range(12, 12):
+    for i in range(1, 30):
         i = "{:02d}".format(i)
 
         print(i)
-        for hour in range (12, 24):
+        for hour in range (0, 24):
             print(hour)
             hour = "{:02d}".format(hour)
 
@@ -357,16 +357,6 @@ if __name__ == '__main__':
             json_data = read_json_data_from_azure(blob_client, AZURE_CONTAINER, directory_path)
             filtered_data = makeSchema(json_data)
             store_data_into_clickhouse(client, filtered_data)
-        
-        # for hour in range (0, 24):
-        #     print(hour)
-        #     hour = "{:02d}".format(hour)
-
-        #     directory_path = feb_path + i + '/' + hour
-
-        #     json_data = read_json_data_from_azure(blob_client, AZURE_CONTAINER, directory_path)
-        #     filtered_data = makeSchema(json_data)
-        #     store_data_into_clickhouse(client, filtered_data)
     
     mar_path = 'fe-track/2024-03-'
     
