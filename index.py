@@ -119,11 +119,10 @@ def store_data_into_clickhouse(client, data):
             df['campaign_details_reward_amount'] = df['campaign_details_reward_amount'].astype(float, errors='ignore').fillna(0)
         
         if(key == "SURVEY_ANSWERED"):
+            df['campaign_details_selected_slot_index'] = df['campaign_details_selected_slot_index'].astype(int, errors='ignore').fillna(0)
+            df['session_time'] = df['session_time'].astype(int, errors='ignore').fillna(0)
+            df['campaign_details_reward_amount'] = df['campaign_details_reward_amount'].astype(int, errors='ignore').fillna(0)
             df['interaction_details_survey_details_survey_page_index'] = df['interaction_details_survey_details_survey_page_index'].astype(int, errors='ignore').fillna(0)
-            df['interaction_details_survey_details_formId'] = df['interaction_details_survey_details_formId'].astype(int, errors='ignore').fillna(0)
-            df['interaction_details_survey_details_formSectionId'] = df['interaction_details_survey_details_formSectionId'].astype(int, errors='ignore').fillna(0)
-            df['campaign_details_reward_amount'] = df['campaign_details_reward_amount'].astype(float, errors='ignore').fillna(0)
-            df['optional_payload_Cart_Value'] = df['optional_payload_Cart_Value'].astype(float, errors='ignore').fillna(0)
         
         if(key == "ACTIVITY_CLICKED"):
             df['session_time'] = df['session_time'].astype(int, errors='ignore').fillna(0)
