@@ -26,10 +26,15 @@ def store_data_into_clickhouse(client, data):
         else:
             raise ValueError("DataFrame does not contain 'timestamp' column")
         
-        if key == "REWARD_GRANTED":
-            df['reward_details_reward_amount'] = df['reward_details_reward_amount'].astype(float, errors='ignore').fillna(0)
-            df['reward_details_reward_index'] = df['reward_details_reward_index'].astype(int, errors='ignore').fillna(0)
-            df['reward_details_stepsCompleted'] = df['reward_details_stepsCompleted'].astype(int, errors='ignore').fillna(0)
+        if key == "PAGE_OPENED":
+            df['campaign_details_reward_amount'] = df['campaign_details_reward_amount'].astype(float, errors='ignore').fillna(0)
+            df['campaign_details_selected_slot_index'] = df['campaign_details_selected_slot_index'].astype(int, errors='ignore').fillna(0)
+            df['session_time'] = df['session_time'].astype(int, errors='ignore').fillna(0)
+
+        if key == "PROMPT_SHOWN":
+            df['campaign_details_selected_slot_index'] = df['campaign_details_selected_slot_index'].astype(int, errors='ignore').fillna(0)
+            df['session_time'] = df['session_time'].astype(int, errors='ignore').fillna(0)
+            df['campaign_details_reward_amount'] = df['campaign_details_reward_amount'].astype(float, errors='ignore').fillna(0)
    
         
         client.insert_dataframe(f'INSERT INTO {key} VALUES', df, settings=dict(use_numpy=True))
@@ -51,8 +56,17 @@ def makeSchema(json_data):
             one_data = flatten(one_data)
             new_data = {}
             
-            if(key == "REWARD_GRANTED"):
-                rkeys = ["type", "event_id", "user_id", "analytics_version", "timestamp", "client", "campaign_details_campaign_id", "campaign_details_campaign_name", "campaign_details_campaign_experience", "campaign_details_campaign_status", "reward_details_event_name", "reward_details_brand_name", "reward_details_series_id", "reward_details_stepsCompleted", "reward_details_activityId", "reward_details_reward_coupon_code", "reward_details_reward_index", "reward_details_reward_id", "reward_details_reward_status", "reward_details_reward_title", "reward_details_reward_body", "reward_details_reward_type", "reward_details_reward_amount", "reward_details_transaction_id", "reward_details_key", "event_name", "reward_details_audiance_id", "reward_details_is_recon_reward", "reward_details_parent_id", "reward_details_is_gratification_campaign"]
+            if(key == "PAGE_OPENED"):
+                rkeys = ["type", "event_name", "event_id", "user_id", "timestamp", "session_id", "session_time", "referrer", "analytics_version", "page_details_page_layout", "page_details_page_name", "campaign_details_campaign_id", "campaign_details_campaign_name", "campaign_details_campaign_experience", "campaign_details_reward_user_id", "campaign_details_reward_status", "campaign_details_campaign_state", "campaign_details_selected_slot_index", "campaign_details_reward_type", "campaign_details_reward_title", "campaign_details_reward_amount", "campaign_details_coupon_code", "platform_details_device_type", "platform_details_os", "platform_details_agent_type", "client", "userId", "eventId", "headers", "platform_details_app_platform"]
+
+                for rkey in rkeys:
+                    if one_data.get(rkey) is not None:
+                        new_data[rkey] = one_data[rkey]
+                    else:
+                        new_data[rkey] = None
+
+            if(key == "PROMPT_SHOWN"):
+                rkeys = ["type", "event_name", "event_id", "user_id", "timestamp", "session_id", "session_time", "referrer", "analytics_version", "page_details_page_layout", "page_details_page_name", "campaign_details_campaign_id", "campaign_details_campaign_name", "campaign_details_campaign_experience", "campaign_details_reward_user_id", "campaign_details_reward_status", "campaign_details_campaign_state", "campaign_details_selected_slot_index", "campaign_details_reward_type", "campaign_details_reward_title", "campaign_details_reward_amount", "campaign_details_coupon_code", "platform_details_device_type", "platform_details_os", "platform_details_agent_type", "client", "userId", "eventId", "headers", "platform_details_app_platform"]
 
                 for rkey in rkeys:
                     if one_data.get(rkey) is not None:
@@ -108,7 +122,7 @@ if __name__ == '__main__':
     # json_data = read_json_data_from_azure(blob_client, AZURE_CONTAINER, 'fe-page/2024-02-14/00')
     # filteredData = makeSchema(json_data)
     # store_data_into_clickhouse(client, filteredData)
-    jan_path = 'reward-granted/2024-01-'
+    jan_path = 'fe-page/2024-01-'
 
     for i in range(1, 32):
         i = "{:02d}".format(i)
@@ -124,7 +138,7 @@ if __name__ == '__main__':
             filtered_data = makeSchema(json_data)
             store_data_into_clickhouse(client, filtered_data)
 
-    feb_path = 'reward-granted/2024-02-'
+    feb_path = 'fe-page/2024-02-'
 
     for i in range(1, 30):
         i = "{:02d}".format(i)
@@ -140,7 +154,7 @@ if __name__ == '__main__':
             filtered_data = makeSchema(json_data)
             store_data_into_clickhouse(client, filtered_data)
     
-    mar_path = 'reward-granted/2024-03-'
+    mar_path = 'fe-page/2024-03-'
     
     for i in range(1, 15):
         i = "{:02d}".format(i)
