@@ -11,10 +11,10 @@ import os
 import numpy as np
 
 def store_data_into_clickhouse(client, data):
-    print(data)
+    # print(data)
     for key, value in data.items():
         df = pd.DataFrame(value)
-        # print(key)
+        print(key , len(value)) 
         if df is None or df.empty:
             print(f"DataFrame for {key} is empty")
             continue
