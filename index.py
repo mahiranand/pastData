@@ -3,6 +3,7 @@ from clickhouse_driver import Client
 from flatten_json import flatten
 from dotenv import load_dotenv
 import pandas as pd
+import uuid
 import json
 import os
 
@@ -10,6 +11,7 @@ import os
 import numpy as np
 
 def store_data_into_clickhouse(client, data):
+    print(data)
     for key, value in data.items():
         df = pd.DataFrame(value)
         # print(key)
@@ -29,8 +31,7 @@ def store_data_into_clickhouse(client, data):
             df['campaign_details_campaign_expired'] = pd.to_numeric(df['campaign_details_campaign_expired'], errors='coerce').fillna(0).astype(int)
             df['campaign_details_campaign_steps_completed'] = pd.to_numeric(df['campaign_details_campaign_steps_completed'], errors='coerce').fillna(0).astype(int)
             df['campaign_details_campaign_total_steps'] = pd.to_numeric(df['campaign_details_campaign_total_steps'], errors='coerce').fillna(0).astype(int)
-        
-        
+   
         
         client.insert_dataframe(f'INSERT INTO {key} VALUES', df, settings=dict(use_numpy=True))
 
@@ -108,6 +109,22 @@ if __name__ == '__main__':
     # json_data = read_json_data_from_azure(blob_client, AZURE_CONTAINER, 'fe-page/2024-02-14/00')
     # filteredData = makeSchema(json_data)
     # store_data_into_clickhouse(client, filteredData)
+    jan_path = 'campaign-joined/2024-01-'
+
+    for i in range(1, 32):
+        i = "{:02d}".format(i)
+
+        print(i)
+        for hour in range (0, 24):
+            print(hour)
+            hour = "{:02d}".format(hour)
+
+            directory_path = jan_path + i + '/' + hour
+
+            json_data = read_json_data_from_azure(blob_client, AZURE_CONTAINER, directory_path)
+            filtered_data = makeSchema(json_data)
+            store_data_into_clickhouse(client, filtered_data)
+
     feb_path = 'campaign-joined/2024-02-'
 
     for i in range(1, 30):
