@@ -26,8 +26,15 @@ def store_data_into_clickhouse(client, data):
         else:
             raise ValueError("DataFrame does not contain 'timestamp' column")
         
-        if key == "CAMPAIGN_EXPIRED":
-            df['event_properties_campaign_details_campaign_expired'] = df['event_properties_campaign_details_campaign_expired'].astype(int, errors='ignore').fillna(0)
+        if key == "GAMECHALLENGE_ACTIVITY_COMPLETED":
+            df['campaign_details_campaign_expired'] = df['campaign_details_campaign_expired'].astype(int, errors='ignore').fillna(0)
+            df['campaign_details_campaign_steps_completed'] = df['campaign_details_campaign_steps_completed'].astype(int, errors='ignore').fillna(0)
+            df['campaign_details_campaign_total_steps'] = df['campaign_details_campaign_total_steps'].astype(int, errors='ignore').fillna(0)
+            df['campaign_details_campaign_activity_activity_completed_total'] = df['campaign_details_campaign_activity_activity_completed_total'].astype(int, errors='ignore').fillna(0)
+            df['campaign_details_campaign_activity_activity_completed_daily'] = df['campaign_details_campaign_activity_activity_completed_daily'].astype(int, errors='ignore').fillna(0)
+            df['campaign_details_campaign_activity_activity_limits_total'] = df['campaign_details_campaign_activity_activity_limits_total'].astype(int, errors='ignore').fillna(0)
+            df['campaign_details_campaign_activity_activity_limits_daily'] = df['campaign_details_campaign_activity_activity_limits_daily'].astype(int, errors='ignore').fillna(0)
+            df['campaign_details_campaign_activity_activity_chances_credited'] = df['campaign_details_campaign_activity_activity_chances_credited'].astype(int, errors='ignore').fillna(0)
    
         
         client.insert_dataframe(f'INSERT INTO {key} VALUES', df, settings=dict(use_numpy=True))
@@ -49,8 +56,8 @@ def makeSchema(json_data):
             one_data = flatten(one_data)
             new_data = {}
             
-            if(key == "CAMPAIGN_EXPIRED"):
-                rkeys = ['analytics_version', 'client', 'event_id', 'event_name', 'event_properties_campaign_details_campaign_experience', 'event_properties_campaign_details_campaign_expiration_type', 'event_properties_campaign_details_campaign_expired', 'event_properties_campaign_details_campaign_expiry', 'event_properties_campaign_details_campaign_id', 'event_properties_campaign_details_campaign_name', 'event_properties_campaign_details_campaign_state', 'timestamp', 'user_id']
+            if(key == "GAMECHALLENGE_ACTIVITY_COMPLETED"):
+                rkeys = ['type', 'event_id', 'client', 'user_id', 'analytics_version', 'timestamp', 'campaign_details_campaign_id', 'campaign_details_campaign_name', 'campaign_details_campaign_experience', 'campaign_details_campaign_status', 'campaign_details_campaign_steps_completed', 'campaign_details_campaign_total_steps', 'campaign_details_campaign_expires_on', 'campaign_details_campaign_expiry_type', 'campaign_details_campaign_expired', 'campaign_details_campaign_activity_activity_completed_total', 'campaign_details_campaign_activity_activity_completed_daily', 'campaign_details_campaign_activity_activity_limits_total', 'campaign_details_campaign_activity_activity_limits_daily', 'campaign_details_campaign_activity_campaign_activity_status', 'campaign_details_campaign_activity_campaign_activity_id', 'campaign_details_campaign_activity_campaign_activity_event_name', 'campaign_details_campaign_activity_campaign_activity_completed_on', 'campaign_details_campaign_activity_activity_chances_credited', 'event_name']
 
                 for rkey in rkeys:
                     if one_data.get(rkey) is not None:
@@ -106,7 +113,7 @@ if __name__ == '__main__':
     # json_data = read_json_data_from_azure(blob_client, AZURE_CONTAINER, 'fe-page/2024-02-14/00')
     # filteredData = makeSchema(json_data)
     # store_data_into_clickhouse(client, filteredData)
-    jan_path = 'campaign-expired/2024-01-'
+    jan_path = 'gamechallenge-activity-completed/2024-01-'
 
     for i in range(1, 32):
         i = "{:02d}".format(i)
@@ -122,7 +129,7 @@ if __name__ == '__main__':
             filtered_data = makeSchema(json_data)
             store_data_into_clickhouse(client, filtered_data)
 
-    feb_path = 'campaign-expired/2024-02-'
+    feb_path = 'gamechallenge-activity-completed/2024-02-'
 
     for i in range(1, 30):
         i = "{:02d}".format(i)
@@ -138,7 +145,7 @@ if __name__ == '__main__':
             filtered_data = makeSchema(json_data)
             store_data_into_clickhouse(client, filtered_data)
     
-    mar_path = 'campaign-expired/2024-03-'
+    mar_path = 'gamechallenge-activity-completed/2024-03-'
     
     for i in range(1, 15):
         i = "{:02d}".format(i)
