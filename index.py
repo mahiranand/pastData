@@ -3,7 +3,6 @@ from clickhouse_driver import Client
 from flatten_json import flatten
 from dotenv import load_dotenv
 import pandas as pd
-import uuid
 import json
 import os
 
@@ -27,10 +26,10 @@ def store_data_into_clickhouse(client, data):
         else:
             raise ValueError("DataFrame does not contain 'timestamp' column")
         
-        if key == "CAMPAIGN_COMPLETED":
-            df['reward_details_score'] = df['reward_details_score'].astype(float, errors='ignore').fillna(0)
-            df['reward_details_reward_index'] = df['reward_details_reward_index'].astype(float, errors='ignore').fillna(0)
-            df['reward_details_reward_amount'] = df['reward_details_reward_amount'].astype(float, errors='ignore').fillna(0)
+        if key == "ALL_REWARDS_CONSUMED":
+            df['campaign_details_campaign_expired'] = df['campaign_details_campaign_expired'].astype(int, errors='ignore').fillna(0)
+            df['campaign_details_campaign_steps_completed'] = df['campaign_details_campaign_steps_completed'].astype(int, errors='ignore').fillna(0)
+            df['campaign_details_campaign_total_steps'] = df['campaign_details_campaign_total_steps'].astype(int, errors='ignore').fillna(0)
    
         
         client.insert_dataframe(f'INSERT INTO {key} VALUES', df, settings=dict(use_numpy=True))
@@ -52,8 +51,8 @@ def makeSchema(json_data):
             one_data = flatten(one_data)
             new_data = {}
             
-            if(key == "CAMPAIGN_COMPLETED"):
-                rkeys = ["type", "event_id", "user_id", "analytics_version", "timestamp", "client", "campaign_details_campaign_id", "campaign_details_campaign_name", "campaign_details_campaign_experience", "campaign_details_campaign_state", "reward_details_score", "reward_details_reward_coupon_code", "reward_details_reward_index", "reward_details_reward_id", "reward_details_reward_status", "reward_details_reward_title", "reward_details_reward_body", "reward_details_reward_expiry", "reward_details_reward_type", "reward_details_reward_amount", "reward_details_ruleId", "reward_details_expiryDate", "event_name", "reward_details_userResponse", "reward_details_Cart_Value", "reward_details_expiry", "reward_details_gratification_id", "reward_details_keyasdj"]
+            if(key == "ALL_REWARDS_CONSUMED"):
+                rkeys = ['type', 'event_id', 'user_id', 'analytics_version', 'timestamp', 'client', 'campaign_details_campaign_id', 'campaign_details_campaign_name', 'campaign_details_campaign_experience', 'campaign_details_campaign_status', 'campaign_details_campaign_steps_completed', 'campaign_details_campaign_total_steps', 'campaign_details_campaign_expires_on', 'campaign_details_campaign_expiry_type', 'campaign_details_campaign_expired', 'event_name']
 
                 for rkey in rkeys:
                     if one_data.get(rkey) is not None:
@@ -109,7 +108,7 @@ if __name__ == '__main__':
     # json_data = read_json_data_from_azure(blob_client, AZURE_CONTAINER, 'fe-page/2024-02-14/00')
     # filteredData = makeSchema(json_data)
     # store_data_into_clickhouse(client, filteredData)
-    jan_path = 'campaign-completed/2024-01-'
+    jan_path = 'all-rewards-consumed/2024-01-'
 
     for i in range(1, 32):
         i = "{:02d}".format(i)
@@ -125,7 +124,7 @@ if __name__ == '__main__':
             filtered_data = makeSchema(json_data)
             store_data_into_clickhouse(client, filtered_data)
 
-    feb_path = 'campaign-completed/2024-02-'
+    feb_path = 'all-rewards-consumed/2024-02-'
 
     for i in range(1, 30):
         i = "{:02d}".format(i)
@@ -141,7 +140,7 @@ if __name__ == '__main__':
             filtered_data = makeSchema(json_data)
             store_data_into_clickhouse(client, filtered_data)
     
-    mar_path = 'campaign-completed/2024-03-'
+    mar_path = 'all-rewards-consumed/2024-03-'
     
     for i in range(1, 15):
         i = "{:02d}".format(i)
