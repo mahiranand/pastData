@@ -295,7 +295,7 @@ def read_json_data_from_azure(client, container_name, directory_path):
             for json_obj in json_objects:
                 json_data = json.loads(json_obj)
                 
-                if(json_data["event_name"] is None):
+                if(json_data.get("event_name") is None):
                     print(json_data)
                     continue
 
