@@ -320,7 +320,7 @@ if __name__ == '__main__':
     # json_data = read_json_data_from_azure(blob_client, AZURE_CONTAINER, 'fe-page/2024-02-14/00')
     # filteredData = makeSchema(json_data)
     # store_data_into_clickhouse(client, filteredData)
-    jan_path = 'fe-internal-events/2024-01-'
+    jan_path = 'streak-activity-completed/2024-01-'
 
     for i in range(1, 32):
         i = "{:02d}".format(i)
@@ -336,7 +336,7 @@ if __name__ == '__main__':
             filtered_data = makeSchema(json_data)
             store_data_into_clickhouse(client, filtered_data)
 
-    feb_path = 'fe-internal-events/2024-02-'
+    feb_path = 'streak-activity-completed/2024-02-'
 
     for i in range(1, 30):
         i = "{:02d}".format(i)
@@ -352,7 +352,7 @@ if __name__ == '__main__':
             filtered_data = makeSchema(json_data)
             store_data_into_clickhouse(client, filtered_data)
     
-    mar_path = 'fe-internal-events/2024-03-'
+    mar_path = 'streak-activity-completed/2024-03-'
     
     for i in range(1, 15):
         i = "{:02d}".format(i)
