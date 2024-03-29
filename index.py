@@ -295,6 +295,10 @@ def read_json_data_from_azure(client, container_name, directory_path):
             for json_obj in json_objects:
                 json_data = json.loads(json_obj)
                 
+                if(json_data["event_name"] is None):
+                    print(json_data)
+                    continue
+
                 if json_data_dist.get(json_data['event_name']) is None:
                     json_data_dist[json_data['event_name']] = []
 
