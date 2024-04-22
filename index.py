@@ -283,28 +283,26 @@ def read_json_data_from_azure(client, container_name, directory_path):
     container_client = client.get_container_client(container_name)
     blob_list = container_client.list_blobs(name_starts_with=directory_path)
 
-    json_data_dist = {}
+    json_data_dict = {}
 
     for blob in blob_list:
-        if(blob.name.endswith('.json')):
+        if blob.name.endswith('.json'):
+            # Extract the 'name' part of the path as the key for grouping
+            path_parts = blob.name.split('/')
+            # This assumes that 'name' is the fifth element in the path, adjust index if necessary
+            name_key = path_parts[4]
+
+            if name_key not in json_data_dict:
+                json_data_dict[name_key] = []
+
             blob_client = container_client.get_blob_client(blob.name)
             blob_data = blob_client.download_blob().readall()
             blob_data_str = blob_data.decode('utf-8')
-            json_objects = blob_data_str.strip().split('\n')
+            json_objects = json.loads(blob_data_str)  # Assuming each blob contains a JSON array
 
-            for json_obj in json_objects:
-                json_data = json.loads(json_obj)
-                
-                if(json_data.get("event_name") is None):
-                    print(json_data)
-                    continue
+            json_data_dict[name_key].extend(json_objects)  # Extend the list with new objects
 
-                if json_data_dist.get(json_data['event_name']) is None:
-                    json_data_dist[json_data['event_name']] = []
-
-                json_data_dist[json_data['event_name']].append(json_data)
-    
-    return json_data_dist
+    return json_data_dict
 
 if __name__ == '__main__':
 
@@ -324,50 +322,53 @@ if __name__ == '__main__':
     # json_data = read_json_data_from_azure(blob_client, AZURE_CONTAINER, 'fe-page/2024-02-14/00')
     # filteredData = makeSchema(json_data)
     # store_data_into_clickhouse(client, filteredData)
-    jan_path = 'sdk-webview/2024-01-'
+    jan_path = '2024/4/'
 
-    for i in range(1, 32):
-        i = "{:02d}".format(i)
+    for i in range(19, 20):
+        # i = "{:02d}".format(i)
+        i = str(i)
 
         print(i)
-        for hour in range (0, 24):
+        for hour in range (18, 24):
             print(hour)
-            hour = "{:02d}".format(hour)
+            # hour = "{:02d}".format(hour)
+            hour = str(hour)
 
             directory_path = jan_path + i + '/' + hour
+            print(directory_path)
 
             json_data = read_json_data_from_azure(blob_client, AZURE_CONTAINER, directory_path)
             filtered_data = makeSchema(json_data)
             store_data_into_clickhouse(client, filtered_data)
 
-    feb_path = 'sdk-webview/2024-02-'
+    # feb_path = 'sdk-webview/2024-02-'
 
-    for i in range(1, 30):
-        i = "{:02d}".format(i)
+    # for i in range(1, 30):
+    #     i = "{:02d}".format(i)
 
-        print(i)
-        for hour in range (0, 24):
-            print(hour)
-            hour = "{:02d}".format(hour)
+    #     print(i)
+    #     for hour in range (0, 24):
+    #         print(hour)
+    #         hour = "{:02d}".format(hour)
 
-            directory_path = feb_path + i + '/' + hour
+    #         directory_path = feb_path + i + '/' + hour
 
-            json_data = read_json_data_from_azure(blob_client, AZURE_CONTAINER, directory_path)
-            filtered_data = makeSchema(json_data)
-            store_data_into_clickhouse(client, filtered_data)
+    #         json_data = read_json_data_from_azure(blob_client, AZURE_CONTAINER, directory_path)
+    #         filtered_data = makeSchema(json_data)
+    #         store_data_into_clickhouse(client, filtered_data)
     
-    mar_path = 'sdk-webview/2024-03-'
+    # mar_path = 'sdk-webview/2024-03-'
     
-    for i in range(1, 15):
-        i = "{:02d}".format(i)
+    # for i in range(1, 15):
+    #     i = "{:02d}".format(i)
 
-        print(i)
-        for hour in range (0, 24):
-            print(hour)
-            hour = "{:02d}".format(hour)
+    #     print(i)
+    #     for hour in range (0, 24):
+    #         print(hour)
+    #         hour = "{:02d}".format(hour)
 
-            directory_path = mar_path + i + '/' + hour
+    #         directory_path = mar_path + i + '/' + hour
 
-            json_data = read_json_data_from_azure(blob_client, AZURE_CONTAINER, directory_path)
-            filtered_data = makeSchema(json_data)
-            store_data_into_clickhouse(client, filtered_data)
+    #         json_data = read_json_data_from_azure(blob_client, AZURE_CONTAINER, directory_path)
+    #         filtered_data = makeSchema(json_data)
+    #         store_data_into_clickhouse(client, filtered_data)
