@@ -324,12 +324,12 @@ if __name__ == '__main__':
     # store_data_into_clickhouse(client, filteredData)
     jan_path = '2024/4/'
 
-    for i in range(19, 20):
+    for i in range(20, 21):
         # i = "{:02d}".format(i)
         i = str(i)
 
         print(i)
-        for hour in range (18, 24):
+        for hour in range (0, 8):
             print(hour)
             # hour = "{:02d}".format(hour)
             hour = str(hour)
